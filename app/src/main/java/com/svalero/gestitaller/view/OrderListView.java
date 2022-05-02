@@ -265,14 +265,12 @@ public class OrderListView extends AppCompatActivity implements OrderListContrac
 
         switch (item.getItemId()) {
             case R.id.modify_menu:                      // Modificar moto
-                Order order = ordersArrayList.get(info.position);
+                OrderDTO orderDTO = ordersDTOArrayList.get(info.position);
 
                 intent.putExtra("modify_order", true);
-                intent.putExtra("id", order.getId());
-                intent.putExtra("date", String.valueOf(order.getDate()));
-                intent.putExtra("description", order.getDescription());
-                intent.putExtra("bikeId", order.getBikeId());
-                intent.putExtra("clientId", order.getClientId());
+                intent.putExtra("id", orderDTO.getId());
+                intent.putExtra("date", String.valueOf(orderDTO.getDate()));
+                intent.putExtra("description", orderDTO.getDescription());
 
                 startActivity(intent);
                 return true;

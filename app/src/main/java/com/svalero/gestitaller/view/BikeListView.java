@@ -89,6 +89,7 @@ public class BikeListView extends AppCompatActivity implements BikeListContract.
 
     @Override
     public void listBikes(ArrayList<Bike> bikes) {
+
         ListView bikesListView = findViewById(R.id.bike_lisview);
         registerForContextMenu(bikesListView);
         this.bikes = bikes;
@@ -97,6 +98,7 @@ public class BikeListView extends AppCompatActivity implements BikeListContract.
 
         bikesListView.setAdapter(bikeArrayAdapter);
         bikesListView.setOnItemClickListener(this);
+
     }
 
     /**

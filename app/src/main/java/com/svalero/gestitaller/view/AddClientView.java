@@ -30,6 +30,7 @@ import com.svalero.gestitaller.R;
 import com.svalero.gestitaller.contract.AddClientContract;
 import com.svalero.gestitaller.database.AppDatabase;
 import com.svalero.gestitaller.domain.Client;
+import com.svalero.gestitaller.presenter.AddClientPresenter;
 import com.svalero.gestitaller.util.ImageUtils;
 
 public class AddClientView extends AppCompatActivity implements AddClientContract.View, OnMapReadyCallback, GoogleMap.OnMapClickListener {
@@ -44,6 +45,7 @@ public class AddClientView extends AppCompatActivity implements AddClientContrac
     private EditText etDni;
     private Intent intent;
     private Button addButton;
+    private AddClientPresenter presenter;
 
     private boolean modifyClient;
 
@@ -59,6 +61,7 @@ public class AddClientView extends AppCompatActivity implements AddClientContrac
         etDni = findViewById(R.id.dni_edittext_add_client);
         addButton = findViewById(R.id.add_client_button);
 
+        presenter = new AddClientPresenter(this);
         client = new Client();
 
         // Permisos para la camara y almacenar en el dispositivo
@@ -117,21 +120,18 @@ public class AddClientView extends AppCompatActivity implements AddClientContrac
             Toast.makeText(this, R.string.select_map_position, Toast.LENGTH_SHORT).show();
         } else {
 
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-                    AppDatabase.class, "client").allowMainThreadQueries().build();
-
             if (modifyClient) {
                 modifyClient = false;
                 addButton.setText(R.string.add_button);
-                db.clientDao().update(client);
+                presenter.updateClient(client);
                 Toast.makeText(this, R.string.modified_client, Toast.LENGTH_SHORT).show();
             } else {
                 client.setId(0);
-                db.clientDao().insert(client);
+                presenter.insertClient(client);
                 Toast.makeText(this, R.string.added_client, Toast.LENGTH_SHORT).show();
             }
 
-            clientImage.setImageResource(R.drawable.ic_menu_camera);
+            clientImage.setImageResource(R.drawable.client);
             etName.setText("");
             etSurname.setText("");
             etDni.setText("");

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -21,6 +20,7 @@ import com.svalero.gestitaller.contract.AddBikeContract;
 import com.svalero.gestitaller.database.AppDatabase;
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
+import com.svalero.gestitaller.presenter.AddBikePresenter;
 import com.svalero.gestitaller.util.ImageUtils;
 
 import java.util.ArrayList;
@@ -36,6 +36,7 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
     private EditText etModel;
     private EditText etLicensePlate;
     private Intent intent;
+    private AddBikePresenter presenter;
 
     private boolean modifyBike;
     public ArrayList<Client> clients;
@@ -52,9 +53,11 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
         clientSpinner = findViewById(R.id.client_spinner_add_bike);
         addButton = findViewById(R.id.add_bike_button);
 
+        presenter = new AddBikePresenter(this);
         bike = new Bike();
         clients = new ArrayList<>();
-        fillSpinner();
+
+        presenter.loadClientsSpinner(); //MVP
         intent();
     }
 
@@ -62,7 +65,25 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
     @Override
     protected void onResume() {
         super.onResume();
-        fillSpinner();
+
+        presenter.loadClientsSpinner(); //MVP
+    }
+
+    @Override
+    public void loadClientSpinner(ArrayList<Client> clients) {
+
+        this.clients.clear();
+        this.clients.addAll(clients);
+
+        String[] arraySpinner = new String[clients.size()];
+
+        for (int i = 0; i < clients.size(); i++) {
+            arraySpinner[i] = clients.get(i).getName() + " " + clients.get(i).getSurname();
+        }
+
+        ArrayAdapter<String> adapterSpinner = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arraySpinner);
+        clientSpinner.setAdapter(adapterSpinner);
+
     }
 
     private void intent() {
@@ -97,46 +118,23 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
             Toast.makeText(this, R.string.complete_all_fields, Toast.LENGTH_SHORT).show();
         } else {
 
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-                    AppDatabase.class, "bike").allowMainThreadQueries().build();
-
             if (modifyBike) {
                 modifyBike = false;
                 addButton.setText(R.string.add_button);
-                db.bikeDao().update(bike);
+                presenter.updateBike(bike);
                 Toast.makeText(this, R.string.modified_bike, Toast.LENGTH_SHORT).show();
             } else {
                 bike.setId(0);
-                db.bikeDao().insert(bike);
+                presenter.insertBike(bike);
                 Toast.makeText(this, R.string.added_bike, Toast.LENGTH_SHORT).show();
             }
 
-            bikeImage.setImageResource(R.drawable.ic_menu_camera);
+            bikeImage.setImageResource(R.drawable.bike_default);
             etBrand.setText("");
             etModel.setText("");
             etLicensePlate.setText("");
 
         }
-    }
-
-    private void fillSpinner() {
-        // Llama a método que carga clientes de la base de datos
-        clients.clear();
-        AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "client").allowMainThreadQueries()
-                .fallbackToDestructiveMigration().build();
-        clients.addAll(db.clientDao().getAll());    // Llama a la BBDD
-        // Crea un array del tamaño de la lista de clientes
-        String[] arraySpinner = new String[clients.size()];
-
-        int i = 0;      // Rellena el spinner con el nombre y apellido de los clientes
-        for (Client client : clients) {
-            arraySpinner[i] = client.getName() + " " + client.getSurname();
-            i++;
-        }
-
-        ArrayAdapter<String> adapterSpinner = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arraySpinner);
-        clientSpinner.setAdapter(adapterSpinner);
     }
 
     //Método para tomar foto
@@ -147,9 +145,9 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
         }
     }
 
-    // Muestra la vista previa en un imageWiev de la foto tomada
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
+    // Muestra la vista previa en un imageWiev de la foto tomada
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
@@ -158,4 +156,5 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
             bikeImage.setImageBitmap(imageBitmap);
         }
     }
+
 }

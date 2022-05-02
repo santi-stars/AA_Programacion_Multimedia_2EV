@@ -38,6 +38,8 @@ public class ClientAdapter extends BaseAdapter {
 
         if (client.getClientImage() != null) {  // Valido si no es null la foto, si no sale fallo nullpoint...
             clientImage.setImageBitmap(ImageUtils.getBitmap(client.getClientImage()));
+        } else {
+            clientImage.setImageResource(R.drawable.client);
         }
         clientNameAndSurnameTv.setText(client.getName() + " " + client.getSurname());
         clientDniTv.setText(client.getDni());
