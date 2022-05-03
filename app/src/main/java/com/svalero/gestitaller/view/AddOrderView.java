@@ -1,7 +1,6 @@
 package com.svalero.gestitaller.view;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -20,7 +19,6 @@ import android.widget.Toast;
 
 import com.svalero.gestitaller.R;
 import com.svalero.gestitaller.contract.AddOrderContract;
-import com.svalero.gestitaller.database.AppDatabase;
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
 import com.svalero.gestitaller.domain.Order;
@@ -44,6 +42,30 @@ public class AddOrderView extends AppCompatActivity implements AddOrderContract.
     private ArrayList<Bike> bikes;
     private boolean modifyOrder;
     private AddOrderPresenter presenter;
+
+    public Spinner getClientSpinner() {
+        return clientSpinner;
+    }
+
+    public Spinner getBikeSpinner() {
+        return bikeSpinner;
+    }
+
+    public Button getAddButton() {
+        return addButton;
+    }
+
+    public ArrayList<Client> getClients() {
+        return clients;
+    }
+
+    public ArrayList<Bike> getBikes() {
+        return bikes;
+    }
+
+    public void setModifyOrder(boolean modifyOrder) {
+        this.modifyOrder = modifyOrder;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,32 +142,19 @@ public class AddOrderView extends AppCompatActivity implements AddOrderContract.
 
     public void addOrder(View view) {
 
-        order.setDate(DateUtils.fromMyDateFormatStringToLocalDate(tvDate.getText().toString().trim()));
+        if (!(tvDate.getText().toString().trim()).equalsIgnoreCase(""))
+            order.setDate(DateUtils.fromMyDateFormatStringToLocalDate(tvDate.getText().toString().trim()));
         order.setDescription(etDescription.getText().toString().trim());
 
-        if (bikeSpinner.getCount() == 0) {
-            Toast.makeText(this, R.string.select_bike, Toast.LENGTH_SHORT).show();
-        } else if ((order.getDescription().equals("")) || (String.valueOf(order.getDate()).equals(""))) {
-            Toast.makeText(this, R.string.complete_all_fields, Toast.LENGTH_SHORT).show();
-        } else {
-            order.setClientId(clients.get(clientSpinner.getSelectedItemPosition()).getId());
-            order.setBikeId(bikes.get(bikeSpinner.getSelectedItemPosition()).getId());
+        presenter.addOrder(order, modifyOrder);
 
-            if (modifyOrder) {
-                modifyOrder = false;
-                addButton.setText(R.string.add_button);
-                presenter.updateOrder(order);
-                Toast.makeText(this, R.string.modified_order, Toast.LENGTH_SHORT).show();
-            } else {
-                order.setId(0);
-                presenter.insertOrder(order);
-                Toast.makeText(this, R.string.added_order, Toast.LENGTH_SHORT).show();
-            }
+    }
 
-            etDescription.setText("");
-            tvDate.setText("");
-
-        }
+    @Override
+    public void cleanForm() {
+        etDescription.setText("");
+        tvDate.setText("");
+        order = new Order(0, null, 0, 0, "");
     }
 
     /**

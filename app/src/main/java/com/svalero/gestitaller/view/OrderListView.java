@@ -28,6 +28,7 @@ import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
 import com.svalero.gestitaller.domain.Order;
 import com.svalero.gestitaller.domain.dto.OrderDTO;
+import com.svalero.gestitaller.presenter.OrderListPresenter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,26 +38,25 @@ public class OrderListView extends AppCompatActivity implements OrderListContrac
         AdapterView.OnItemClickListener, DetailFragment.closeDetails {
 
     public ArrayList<OrderDTO> ordersDTOArrayList;
-    public ArrayList<Order> ordersArrayList;
+
     public OrderAdapter orderDTOArrayAdapter;
     private Bike bike;
     private Client client;
-    private OrderDTO orderDTO;
     private FrameLayout frameLayout;
     private String orderBy;
-    private AppDatabase dbBike, dbClient, dbOrder;
     public Spinner findSpinner;
     private final String[] FIND_SPINNER_OPTIONS = new String[]{"Fecha", "Cliente", "Moto", "Matrícula"};
     private final String DEFAULT_STRING = "";
+    private OrderListPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_order);
 
+        presenter = new OrderListPresenter(this);
         bike = new Bike();
         client = new Client();
-        ordersArrayList = new ArrayList<>();
         ordersDTOArrayList = new ArrayList<>();
         frameLayout = findViewById(R.id.frame_layout_order);
         findSpinner = findViewById(R.id.find_spinner_view_order);
@@ -64,25 +64,14 @@ public class OrderListView extends AppCompatActivity implements OrderListContrac
         findSpinner.setAdapter(adapterSpinner);
         orderBy = DEFAULT_STRING;
 
-        dbBike = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "bike").allowMainThreadQueries()
-                .fallbackToDestructiveMigration().build();
-        dbClient = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "client").allowMainThreadQueries()
-                .fallbackToDestructiveMigration().build();
-        dbOrder = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "order").allowMainThreadQueries()
-                .fallbackToDestructiveMigration().build();
-
-        orderList();
-
+        findOrdersBy(DEFAULT_STRING);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        orderList();
+        findOrdersBy(DEFAULT_STRING);
     }
 
     @Override
@@ -94,30 +83,30 @@ public class OrderListView extends AppCompatActivity implements OrderListContrac
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                findBy(query.trim());
+                findOrdersBy(query.trim());
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                findBy(newText.trim());
+                findOrdersBy(newText.trim());
                 return true;
             }
         });
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void orderList() {
-
+    @Override
+    public void listClients(ArrayList<OrderDTO> ordersDTOArrayList) {
         ListView ordersListView = findViewById(R.id.order_listview);
         registerForContextMenu(ordersListView);
+        this.ordersDTOArrayList = ordersDTOArrayList;
 
         orderDTOArrayAdapter = new OrderAdapter(this, ordersDTOArrayList);
 
-        findBy(DEFAULT_STRING);
-
         ordersListView.setAdapter(orderDTOArrayAdapter);
         ordersListView.setOnItemClickListener(this);
+
     }
 
     /**
@@ -126,9 +115,9 @@ public class OrderListView extends AppCompatActivity implements OrderListContrac
      *
      * @param query cadena de texto que se introduce en el searchView del ActionBar
      */
-    private void findBy(String query) {
-        orderDTO = new OrderDTO();
-        loadOrdersDTO();
+    private void findOrdersBy(String query) {
+        ordersDTOArrayList.clear();
+        presenter.loadAllOrders();
 
         switch (findSpinner.getSelectedItemPosition()) {
             case 0:
@@ -178,32 +167,6 @@ public class OrderListView extends AppCompatActivity implements OrderListContrac
             }
         });
         orderDTOArrayAdapter.notifyDataSetChanged();
-    }
-
-    /**
-     * Carga los elementos de la clase adaptada para el ListView de ordenes
-     */
-    private void loadOrdersDTO() {
-        ordersDTOArrayList.clear();
-        ordersArrayList.clear();
-
-        ordersArrayList.addAll(dbOrder.orderDao().getAll());
-
-        for (Order order : ordersArrayList) {
-            client = dbClient.clientDao().getClientById(order.getClientId());
-            bike = dbBike.bikeDao().getBikeById(order.getBikeId());
-            orderDTO = new OrderDTO();
-
-            orderDTO.setId(order.getId());
-            orderDTO.setDate(order.getDate());
-            orderDTO.setClientNameSurname(client.getName() + " " + client.getSurname());
-            orderDTO.setBikeBrandModel(bike.getBrand() + " " + bike.getModel());
-            orderDTO.setBikeLicensePlate(bike.getLicensePlate());
-            orderDTO.setBikeImageOrder(bike.getBikeImage());
-            orderDTO.setDescription(order.getDescription());
-
-            ordersDTOArrayList.add(orderDTO);
-        }
     }
 
     /**
@@ -289,16 +252,18 @@ public class OrderListView extends AppCompatActivity implements OrderListContrac
     }
 
     private void deleteOrder(AdapterView.AdapterContextMenuInfo info) {
-        Order order = ordersArrayList.get(info.position);
+
+        OrderDTO orderDTO = ordersDTOArrayList.get(info.position);
+        Order order = new Order();
+        order.setId(orderDTO.getId());
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.are_you_sure_delete_order)
                 .setPositiveButton(R.string.yes_capital, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-                                AppDatabase.class, "order").allowMainThreadQueries().build();
-                        db.orderDao().delete(order);
-                        orderList();
+                        presenter.deleteOrder(order);
+                        findOrdersBy(DEFAULT_STRING);
                     }
                 })
                 .setNegativeButton(R.string.no_capital, new DialogInterface.OnClickListener() {
@@ -311,6 +276,11 @@ public class OrderListView extends AppCompatActivity implements OrderListContrac
 
     }
 
+    /**
+     * Llama al fragment para los detalles y le pasa datos
+     *
+     * @param position
+     */
     private void showDetails(int position) {
 
         OrderDTO orderDTO = ordersDTOArrayList.get(position);

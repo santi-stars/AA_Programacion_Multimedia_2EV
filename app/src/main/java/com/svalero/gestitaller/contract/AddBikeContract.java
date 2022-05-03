@@ -20,13 +20,13 @@ public interface AddBikeContract {
 
     interface View {
         void loadClientSpinner(ArrayList<Client> clients);
+
+        void cleanForm();
     }
 
     interface Presenter {
         void loadClientsSpinner();
 
-        void insertBike(Bike bike);
-
-        void updateBike(Bike bike);
+        void addBike(Bike bike, Boolean modifyBike);
     }
 }

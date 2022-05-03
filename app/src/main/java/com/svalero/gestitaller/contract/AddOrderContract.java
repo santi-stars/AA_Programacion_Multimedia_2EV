@@ -25,12 +25,12 @@ public interface AddOrderContract {
         void fillBikeSpinner(ArrayList<Bike> bikes);
 
         void fillClientSpinner(ArrayList<Client> clients);
+
+        void cleanForm();
     }
 
     interface Presenter {
-        void insertOrder(Order order);
-
-        void updateOrder(Order order);
+        void addOrder(Order order, Boolean modifyOrder);
 
         void fillBikeSpinner(int clientId);
 

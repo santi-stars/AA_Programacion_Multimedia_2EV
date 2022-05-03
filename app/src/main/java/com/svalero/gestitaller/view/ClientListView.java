@@ -146,22 +146,6 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
     }
 
     /**
-     * Método para cuando se crea el menu contextual, infle el menu con las opciones
-     *
-     * @param menu
-     * @param v
-     * @param menuInfo
-     */
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo
-            menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        getMenuInflater().inflate(R.menu.listview_menu, menu);
-
-    }
-
-    /**
      * Opciones del menú ActionBar
      *
      * @param item
@@ -186,6 +170,22 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Método para cuando se crea el menu contextual, infle el menu con las opciones
+     *
+     * @param menu
+     * @param v
+     * @param menuInfo
+     */
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo
+            menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        getMenuInflater().inflate(R.menu.listview_menu, menu);
+
     }
 
     /**

@@ -41,6 +41,14 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
     private boolean modifyBike;
     public ArrayList<Client> clients;
 
+    public Button getAddButton() {
+        return addButton;
+    }
+
+    public void setModifyBike(boolean modifyBike) {
+        this.modifyBike = modifyBike;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,27 +122,18 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
         bike.setClientId(clients.get(clientSpinner.getSelectedItemPosition()).getId());
         bike.setBikeImage(ImageUtils.fromImageViewToByteArray(bikeImage));
 
-        if ((bike.getBrand().equals("")) || (bike.getModel().equals("")) || (bike.getLicensePlate().equals(""))) {
-            Toast.makeText(this, R.string.complete_all_fields, Toast.LENGTH_SHORT).show();
-        } else {
+        presenter.addBike(bike, modifyBike);
 
-            if (modifyBike) {
-                modifyBike = false;
-                addButton.setText(R.string.add_button);
-                presenter.updateBike(bike);
-                Toast.makeText(this, R.string.modified_bike, Toast.LENGTH_SHORT).show();
-            } else {
-                bike.setId(0);
-                presenter.insertBike(bike);
-                Toast.makeText(this, R.string.added_bike, Toast.LENGTH_SHORT).show();
-            }
+    }
 
-            bikeImage.setImageResource(R.drawable.bike_default);
-            etBrand.setText("");
-            etModel.setText("");
-            etLicensePlate.setText("");
+    @Override
+    public void cleanForm() {
 
-        }
+        bikeImage.setImageResource(R.drawable.bike_default);
+        etBrand.setText("");
+        etModel.setText("");
+        etLicensePlate.setText("");
+
     }
 
     //Método para tomar foto
