@@ -29,7 +29,7 @@
                 android:background="@drawable/custom_button"
                 android:contentDescription="@string/app_name"
                 android:scaleType="fitXY"
-                app:srcCompat="@android:drawable/ic_menu_camera" />
+                app:srcCompat="@drawable/bike_default" />
 
         </androidx.cardview.widget.CardView>
 

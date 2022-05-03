@@ -39,6 +39,16 @@
         <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia/GestiTaller/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1325" />
         <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia/GestiTaller/app/src/main/res/mipmap-anydpi-v26/ic_logo.xml" value="0.1325" />
         <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia/GestiTaller/app/src/main/res/xml/file_paths.xml" value="0.23984608807182556" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout-land/activity_add_bike.xml" value="0.24757281553398058" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout-land/activity_add_client.xml" value="0.24757281553398058" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout-land/client_and_bike_adapter.xml" value="0.24757281553398058" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout-land/fragment_order_detail.xml" value="0.24757281553398058" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout/activity_add_bike.xml" value="0.23984608807182556" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout/activity_add_client.xml" value="0.22958529286019666" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout/activity_add_order.xml" value="0.23984608807182556" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout/activity_view_order.xml" value="0.23984608807182556" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout/client_and_bike_adapter.xml" value="0.23984608807182556" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout/fragment_order_detail.xml" value="0.23984608807182556" />
       </map>
     </option>
   </component>

@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.room.Room;
 
 import android.Manifest;
 import android.content.Intent;
@@ -17,7 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,8 +26,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.svalero.gestitaller.R;
 import com.svalero.gestitaller.contract.AddClientContract;
-import com.svalero.gestitaller.database.AppDatabase;
 import com.svalero.gestitaller.domain.Client;
+import com.svalero.gestitaller.presenter.AddClientPresenter;
 import com.svalero.gestitaller.util.ImageUtils;
 
 public class AddClientView extends AppCompatActivity implements AddClientContract.View, OnMapReadyCallback, GoogleMap.OnMapClickListener {
@@ -44,8 +42,17 @@ public class AddClientView extends AppCompatActivity implements AddClientContrac
     private EditText etDni;
     private Intent intent;
     private Button addButton;
+    private AddClientPresenter presenter;
 
     private boolean modifyClient;
+
+    public Button getAddButton() {
+        return addButton;
+    }
+
+    public void setModifyClient(boolean modifyClient) {
+        this.modifyClient = modifyClient;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +66,7 @@ public class AddClientView extends AppCompatActivity implements AddClientContrac
         etDni = findViewById(R.id.dni_edittext_add_client);
         addButton = findViewById(R.id.add_client_button);
 
+        presenter = new AddClientPresenter(this);
         client = new Client();
 
         // Permisos para la camara y almacenar en el dispositivo
@@ -111,38 +119,21 @@ public class AddClientView extends AppCompatActivity implements AddClientContrac
         client.setDni(etDni.getText().toString().trim());
         client.setClientImage(ImageUtils.fromImageViewToByteArray(clientImage));
 
-        if ((client.getName().equals("")) || (client.getSurname().equals("")) || (client.getDni().equals(""))) {
-            Toast.makeText(this, R.string.complete_all_fields, Toast.LENGTH_SHORT).show();
-        } else if (client.getLatitude() == 0 && client.getLongitude() == 0) {
-            Toast.makeText(this, R.string.select_map_position, Toast.LENGTH_SHORT).show();
-        } else {
+        presenter.addClient(client, modifyClient);
+    }
 
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-                    AppDatabase.class, "client").allowMainThreadQueries().build();
+    @Override
+    public void cleanForm() {
+        clientImage.setImageResource(R.drawable.client);
+        etName.setText("");
+        etSurname.setText("");
+        etDni.setText("");
+        vipSwitch.setChecked(false);
 
-            if (modifyClient) {
-                modifyClient = false;
-                addButton.setText(R.string.add_button);
-                db.clientDao().update(client);
-                Toast.makeText(this, R.string.modified_client, Toast.LENGTH_SHORT).show();
-            } else {
-                client.setId(0);
-                db.clientDao().insert(client);
-                Toast.makeText(this, R.string.added_client, Toast.LENGTH_SHORT).show();
-            }
-
-            clientImage.setImageResource(R.drawable.ic_menu_camera);
-            etName.setText("");
-            etSurname.setText("");
-            etDni.setText("");
-            vipSwitch.setChecked(false);
-
-            client.setVip(false);
-            client.setLatitude(0);
-            client.setLongitude(0);
-            marker.remove();
-
-        }
+        client.setVip(false);
+        client.setLatitude(0);
+        client.setLongitude(0);
+        marker.remove();
     }
 
     /**
@@ -161,16 +152,16 @@ public class AddClientView extends AppCompatActivity implements AddClientContrac
         }
 
     }
-
     //Método para tomar foto
+
     public void takePhoto(View view) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, 1);
         }
     }
-
     // Muestra la vista previa en un imageWiev de la foto tomada
+
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -197,7 +188,7 @@ public class AddClientView extends AppCompatActivity implements AddClientContrac
         if (client.getLatitude() != 0 && client.getLongitude() != 0) {  // Si el cliente tiene ubicación
             onMapClick(new LatLng(client.getLatitude(), client.getLongitude()));    // Pone un Marker
             map.moveCamera(CameraUpdateFactory.newLatLng    // Centra la camara y asigna un zoom
-                    (new LatLng(client.getLatitude(), client.getLongitude())));
+                    (new LatLng((client.getLatitude()-0.06), client.getLongitude())));
             map.moveCamera(CameraUpdateFactory.zoomTo(11));
         }
     }

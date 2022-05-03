@@ -35,7 +35,7 @@
                 android:contentDescription="@string/app_name"
                 android:onClick="takePhoto"
                 android:scaleType="fitXY"
-                app:srcCompat="@android:drawable/ic_menu_camera" />
+                app:srcCompat="@drawable/bike_default" />
 
         </androidx.cardview.widget.CardView>
 

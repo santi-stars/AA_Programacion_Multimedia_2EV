@@ -25,6 +25,7 @@ import com.svalero.gestitaller.adapters.ClientAdapter;
 import com.svalero.gestitaller.contract.ClientListContract;
 import com.svalero.gestitaller.database.AppDatabase;
 import com.svalero.gestitaller.domain.Client;
+import com.svalero.gestitaller.presenter.ClientListPresenter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,12 +41,14 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
     public Spinner findSpinner;
     private final String[] FIND_SPINNER_OPTIONS = new String[]{"Nombre", "Apellido", "Dni"};
     private final String DEFAULT_STRING = "";
+    private ClientListPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_client);
 
+        presenter = new ClientListPresenter(this);
         clients = new ArrayList<>();
         frameLayout = findViewById(R.id.frame_layout_client);
         findSpinner = findViewById(R.id.find_spinner_view_client);
@@ -53,14 +56,14 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
         findSpinner.setAdapter(adapterSpinner);
         orderBy = DEFAULT_STRING;
 
-        clientList();
+        findClientsBy(DEFAULT_STRING);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        clientList();
+        findClientsBy(DEFAULT_STRING);
     }
 
     @Override
@@ -72,51 +75,49 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                findBy(query.trim());
+                findClientsBy(query.trim());
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                findBy(newText.trim());
+                findClientsBy(newText.trim());
                 return true;
             }
         });
         return super.onCreateOptionsMenu(menu);
     }
 
-    public void clientList() {
+    @Override
+    public void listClients(ArrayList<Client> clients) {
 
         ListView clientsListView = findViewById(R.id.client_lisview);
         registerForContextMenu(clientsListView);
+        this.clients = clients;
 
         clientArrayAdapter = new ClientAdapter(this, clients);
-
-        findBy(DEFAULT_STRING);
 
         clientsListView.setAdapter(clientArrayAdapter);
         clientsListView.setOnItemClickListener(this);
 
     }
 
-    private void findBy(String query) {
+    private void findClientsBy(String query) {
         clients.clear();
-        AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "client").allowMainThreadQueries()
-                .fallbackToDestructiveMigration().build();
 
         if (query.equalsIgnoreCase(DEFAULT_STRING)) {
-            clients.addAll(db.clientDao().getAll());
+            presenter.loadAllClients();
         } else {
+            query = "%" + query + "%";
             switch (findSpinner.getSelectedItemPosition()) {
                 case 0:
-                    clients.addAll(db.clientDao().getByNameString("%" + query + "%"));
+                    presenter.loadClientsByName(query);
                     break;
                 case 1:
-                    clients.addAll(db.clientDao().getBySurnameString("%" + query + "%"));
+                    presenter.loadClientsBySurname(query);
                     break;
                 case 2:
-                    clients.addAll(db.clientDao().getByDniString("%" + query + "%"));
+                    presenter.loadClientsByDni(query);
                     break;
             }
         }
@@ -145,21 +146,11 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
     }
 
     /**
-     * Método para cuando se crea el menu contextual, infle el menu con las opciones
+     * Opciones del menú ActionBar
      *
-     * @param menu
-     * @param v
-     * @param menuInfo
+     * @param item
+     * @return
      */
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo
-            menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        getMenuInflater().inflate(R.menu.listview_menu, menu);
-
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -179,6 +170,22 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Método para cuando se crea el menu contextual, infle el menu con las opciones
+     *
+     * @param menu
+     * @param v
+     * @param menuInfo
+     */
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo
+            menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        getMenuInflater().inflate(R.menu.listview_menu, menu);
+
     }
 
     /**
@@ -231,10 +238,8 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
                 .setPositiveButton(R.string.yes_capital, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-                                AppDatabase.class, "client").allowMainThreadQueries().build();
-                        db.clientDao().delete(client);
-                        clientList();
+                        presenter.deleteClient(client);
+                        findClientsBy(DEFAULT_STRING);
                     }
                 })
                 .setNegativeButton(R.string.no_capital, new DialogInterface.OnClickListener() {

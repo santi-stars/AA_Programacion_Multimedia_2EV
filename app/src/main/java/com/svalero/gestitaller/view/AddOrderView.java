@@ -1,11 +1,9 @@
 package com.svalero.gestitaller.view;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,16 +19,14 @@ import android.widget.Toast;
 
 import com.svalero.gestitaller.R;
 import com.svalero.gestitaller.contract.AddOrderContract;
-import com.svalero.gestitaller.database.AppDatabase;
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
 import com.svalero.gestitaller.domain.Order;
+import com.svalero.gestitaller.presenter.AddOrderPresenter;
 import com.svalero.gestitaller.util.DateUtils;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class AddOrderView extends AppCompatActivity implements AddOrderContract.View {
 
@@ -45,6 +41,31 @@ public class AddOrderView extends AppCompatActivity implements AddOrderContract.
     private ArrayList<Client> clients;
     private ArrayList<Bike> bikes;
     private boolean modifyOrder;
+    private AddOrderPresenter presenter;
+
+    public Spinner getClientSpinner() {
+        return clientSpinner;
+    }
+
+    public Spinner getBikeSpinner() {
+        return bikeSpinner;
+    }
+
+    public Button getAddButton() {
+        return addButton;
+    }
+
+    public ArrayList<Client> getClients() {
+        return clients;
+    }
+
+    public ArrayList<Bike> getBikes() {
+        return bikes;
+    }
+
+    public void setModifyOrder(boolean modifyOrder) {
+        this.modifyOrder = modifyOrder;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,22 +80,17 @@ public class AddOrderView extends AppCompatActivity implements AddOrderContract.
 
         order = new Order(0, null, 0, 0, "");
 
+        presenter = new AddOrderPresenter(this);
         clients = new ArrayList<>();
         bikes = new ArrayList<>();
-        rellenarSpinners(0);
+        fillSpinners(0);
         intent();
 
         clientSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.i("id_spinner_client", "position " + position + ", id " + id);  // BORRAR
-                Log.i("id_spinner_client", String.valueOf(clients.get(clientSpinner.getSelectedItemPosition()).getId()));   // BORRAR
-                rellenarSpinners(clients.get(clientSpinner.getSelectedItemPosition()).getId());
-                Log.i("id_spinner_bike", String.valueOf(bikeSpinner.getCount()));   // BORRAR
-                if (bikeSpinner.getCount() > 0) {                                           // BORRAR
-                    Log.i("id_spinner_bike", String.valueOf(bikes.get(bikeSpinner.getSelectedItemPosition()).getId())); // BORRAR
-                }                                                               // BORRAR
+                fillSpinners(clients.get(clientSpinner.getSelectedItemPosition()).getId());
             }
 
             @Override
@@ -87,7 +103,7 @@ public class AddOrderView extends AppCompatActivity implements AddOrderContract.
     @Override
     protected void onResume() {
         super.onResume();
-        rellenarSpinners(0);
+        fillSpinners(0);
     }
 
     public void selectDate(View view) {
@@ -126,37 +142,19 @@ public class AddOrderView extends AppCompatActivity implements AddOrderContract.
 
     public void addOrder(View view) {
 
-        order.setDate(DateUtils.fromMyDateFormatStringToLocalDate(tvDate.getText().toString().trim()));
+        if (!(tvDate.getText().toString().trim()).equalsIgnoreCase(""))
+            order.setDate(DateUtils.fromMyDateFormatStringToLocalDate(tvDate.getText().toString().trim()));
         order.setDescription(etDescription.getText().toString().trim());
 
-        if (bikeSpinner.getCount() == 0) {
-            Toast.makeText(this, R.string.select_bike, Toast.LENGTH_SHORT).show();
-        } else if ((order.getDescription().equals("")) || (String.valueOf(order.getDate()).equals(""))) {
-            Toast.makeText(this, R.string.complete_all_fields, Toast.LENGTH_SHORT).show();
-        } else {
-            order.setClientId(clients.get(clientSpinner.getSelectedItemPosition()).getId());
-            order.setBikeId(bikes.get(bikeSpinner.getSelectedItemPosition()).getId());
+        presenter.addOrder(order, modifyOrder);
 
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-                    AppDatabase.class, "order").allowMainThreadQueries().build();
+    }
 
-            if (modifyOrder) {
-                Log.i("modifyed_order", order.toString());
-                modifyOrder = false;
-                addButton.setText(R.string.add_button);
-                db.orderDao().update(order);
-                Toast.makeText(this, R.string.modified_order, Toast.LENGTH_SHORT).show();
-            } else {
-                order.setId(0);
-                Log.i("new_order", order.toString());
-                db.orderDao().insert(order);
-                Toast.makeText(this, R.string.added_order, Toast.LENGTH_SHORT).show();
-            }
-
-            etDescription.setText("");
-            tvDate.setText("");
-
-        }
+    @Override
+    public void cleanForm() {
+        etDescription.setText("");
+        tvDate.setText("");
+        order = new Order(0, null, 0, 0, "");
     }
 
     /**
@@ -165,51 +163,47 @@ public class AddOrderView extends AppCompatActivity implements AddOrderContract.
      * @param idClient 0 rellena el spinner de clients con todos ellos,
      *                 > 0 rellena el spinner de bikes con las motos del id enviado por parametro
      */
-    private void rellenarSpinners(int idClient) {
+    private void fillSpinners(int idClient) {
 
-        if (idClient == 0) {
-
-            clients.clear();
-
-            AppDatabase dbClient = Room.databaseBuilder(getApplicationContext(),
-                    AppDatabase.class, "client").allowMainThreadQueries()
-                    .fallbackToDestructiveMigration().build();
-            clients.addAll(dbClient.clientDao().getAll());
-
-            // Crea un array del tamaño de la lista de clientes
-            String[] arrayClientSpinner = new String[clients.size()];
-
-            int i = 0;      // Rellena el spinner con el nombre y apellido de los clientes
-            for (Client client : clients) {
-                arrayClientSpinner[i] = client.getName() + " " + client.getSurname();
-                Log.i("spinner_client", arrayClientSpinner[i]);
-                i++;
-            }
-
-            ArrayAdapter<String> adapterClientSpinner = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrayClientSpinner);
-            clientSpinner.setAdapter(adapterClientSpinner);
-
+        if (idClient == 0) {    // CLIENT
+            presenter.fillClientSpinner();
         } else {    // BIKE
-
-            bikes.clear();
-
-            AppDatabase dbBike = Room.databaseBuilder(getApplicationContext(),
-                    AppDatabase.class, "bike").allowMainThreadQueries()
-                    .fallbackToDestructiveMigration().build();
-            bikes.addAll(dbBike.bikeDao().getBikesByClientId(idClient));
-
-            String[] arrayBikeSpinner = new String[bikes.size()];
-
-            int j = 0;      // Rellena el spinner con la marca y modelo de las motos
-            for (Bike bike : bikes) {
-                arrayBikeSpinner[j] = bike.getBrand() + " " + bike.getModel();
-                Log.i("spinner_bike", arrayBikeSpinner[j]);
-                j++;
-            }
-
-            ArrayAdapter<String> adapterBikeSpinner = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrayBikeSpinner);
-            bikeSpinner.setAdapter(adapterBikeSpinner);
-
+            presenter.fillBikeSpinner(idClient);
         }
+
+    }
+
+    @Override
+    public void fillBikeSpinner(ArrayList<Bike> bikes) {
+
+        this.bikes.clear();
+        this.bikes.addAll(bikes);
+
+        String[] arrayBikeSpinner = new String[bikes.size()];
+
+        for (int i = 0; i < bikes.size(); i++) {
+            arrayBikeSpinner[i] = bikes.get(i).getBrand() + " " + bikes.get(i).getModel();
+        }
+
+        ArrayAdapter<String> adapterBikeSpinner = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrayBikeSpinner);
+        bikeSpinner.setAdapter(adapterBikeSpinner);
+
+    }
+
+    @Override
+    public void fillClientSpinner(ArrayList<Client> clients) {
+
+        this.clients.clear();
+        this.clients.addAll(clients);
+
+        String[] arrayClientSpinner = new String[clients.size()];
+
+        for (int i = 0; i < clients.size(); i++) {
+            arrayClientSpinner[i] = clients.get(i).getName() + " " + clients.get(i).getSurname();
+        }
+
+        ArrayAdapter<String> adapterClientSpinner = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrayClientSpinner);
+        clientSpinner.setAdapter(adapterClientSpinner);
+
     }
 }
