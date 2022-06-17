@@ -16,32 +16,32 @@
 
     <application
 
-
-    android:allowBackup="true"
+        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_logo"
+        android:supportsRtl="true"
         android:theme="@style/Theme.GestiTaller.NoActionBar"
-        android:supportsRtl="true" >
+        android:usesCleartextTraffic="true">    <!-- Admita Json -->
 
         <activity
             android:name=".view.BikeListView"
-            android:theme="@style/Theme.GestiTaller"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.GestiTaller" />
         <activity
             android:name=".view.AddBikeView"
             android:exported="false" />
         <activity
             android:name=".view.OrderListView"
-            android:theme="@style/Theme.GestiTaller"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.GestiTaller" />
         <activity
             android:name=".view.AddOrderView"
             android:exported="false" />
         <activity
             android:name=".view.ClientListView"
-            android:theme="@style/Theme.GestiTaller"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.GestiTaller" />
         <activity
             android:name=".view.AddClientView"
             android:exported="false" />

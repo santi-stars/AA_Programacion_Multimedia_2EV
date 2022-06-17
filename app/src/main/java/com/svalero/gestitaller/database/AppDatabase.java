@@ -8,9 +8,9 @@ import com.svalero.gestitaller.dao.ClientDao;
 import com.svalero.gestitaller.dao.OrderDao;
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
-import com.svalero.gestitaller.domain.Order;
+import com.svalero.gestitaller.domain.WorkOrder;
 
-@Database(entities = {Bike.class, Client.class, Order.class}, version = 1, exportSchema = false)
+@Database(entities = {Bike.class, Client.class, WorkOrder.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract BikeDao bikeDao();

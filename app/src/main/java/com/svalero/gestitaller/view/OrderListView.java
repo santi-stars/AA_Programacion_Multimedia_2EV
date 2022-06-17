@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuItemCompat;
-import androidx.room.Room;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,10 +22,9 @@ import android.widget.Spinner;
 import com.svalero.gestitaller.R;
 import com.svalero.gestitaller.adapters.OrderAdapter;
 import com.svalero.gestitaller.contract.OrderListContract;
-import com.svalero.gestitaller.database.AppDatabase;
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
-import com.svalero.gestitaller.domain.Order;
+import com.svalero.gestitaller.domain.WorkOrder;
 import com.svalero.gestitaller.domain.dto.OrderDTO;
 import com.svalero.gestitaller.presenter.OrderListPresenter;
 
@@ -121,11 +119,13 @@ public class OrderListView extends AppCompatActivity implements OrderListContrac
 
         switch (findSpinner.getSelectedItemPosition()) {
             case 0:
-                ordersDTOArrayList.removeIf
-                        (orderDTO -> (!String.valueOf(orderDTO.getDate()).contains(query)));
+                ordersDTOArrayList.clear();
+                presenter.loadAllOrders();
+                ordersDTOArrayList.removeIf // TODO por fecha hacer así, cargar todos y quitar los que no coincidan
+                (orderDTO -> (!String.valueOf(orderDTO.getDate()).contains(query)));
                 break;
             case 1:
-                ordersDTOArrayList.removeIf
+                ordersDTOArrayList.removeIf // TODO para el resto busqueda filtrada
                         (orderDTO -> (!orderDTO.getClientNameSurname().toLowerCase().contains(query.toLowerCase())));
                 break;
             case 2:
@@ -254,15 +254,15 @@ public class OrderListView extends AppCompatActivity implements OrderListContrac
     private void deleteOrder(AdapterView.AdapterContextMenuInfo info) {
 
         OrderDTO orderDTO = ordersDTOArrayList.get(info.position);
-        Order order = new Order();
-        order.setId(orderDTO.getId());
+        WorkOrder workOrder = new WorkOrder();
+        workOrder.setId(orderDTO.getId());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.are_you_sure_delete_order)
                 .setPositiveButton(R.string.yes_capital, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        presenter.deleteOrder(order);
+                        presenter.deleteOrder(workOrder);
                         findOrdersBy(DEFAULT_STRING);
                     }
                 })

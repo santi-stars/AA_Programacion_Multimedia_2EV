@@ -4,12 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuItemCompat;
-import androidx.room.Room;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,18 +21,17 @@ import android.widget.Spinner;
 import com.svalero.gestitaller.R;
 import com.svalero.gestitaller.adapters.BikeAdapter;
 import com.svalero.gestitaller.contract.BikeListContract;
-import com.svalero.gestitaller.database.AppDatabase;
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.presenter.BikeListPresenter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 public class BikeListView extends AppCompatActivity implements BikeListContract.View, AdapterView.OnItemClickListener {
 
-    public ArrayList<Bike> bikes;
+    public List<Bike> bikes;
     public BikeAdapter bikeArrayAdapter;
     public Spinner findSpinner;
     private String orderBy;
@@ -47,12 +44,13 @@ public class BikeListView extends AppCompatActivity implements BikeListContract.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bike);
         findSpinner = findViewById(R.id.find_spinner_view_bike);
+        bikes = new ArrayList<>();
         presenter = new BikeListPresenter(this);
+        bikeArrayAdapter = new BikeAdapter(this, bikes);
 
         ArrayAdapter<String> adapterSpinner = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, FIND_SPINNER_OPTIONS);
         findSpinner.setAdapter(adapterSpinner);
 
-        bikes = new ArrayList<>();
         orderBy = DEFAULT_STRING;
 
         findBikesBy(DEFAULT_STRING);
@@ -88,7 +86,7 @@ public class BikeListView extends AppCompatActivity implements BikeListContract.
     }
 
     @Override
-    public void listBikes(ArrayList<Bike> bikes) {
+    public void listBikes(List<Bike> bikes) {
 
         ListView bikesListView = findViewById(R.id.bike_lisview);
         registerForContextMenu(bikesListView);
@@ -98,6 +96,11 @@ public class BikeListView extends AppCompatActivity implements BikeListContract.
 
         bikesListView.setAdapter(bikeArrayAdapter);
         bikesListView.setOnItemClickListener(this);
+
+    }
+
+    @Override
+    public void showMessage(String message) {
 
     }
 
@@ -224,7 +227,7 @@ public class BikeListView extends AppCompatActivity implements BikeListContract.
                 intent.putExtra("brand", bike.getBrand());
                 intent.putExtra("model", bike.getModel());
                 intent.putExtra("license_plate", bike.getLicensePlate());
-                intent.putExtra("clientId", bike.getClientId());
+                intent.putExtra("clientId", bike.getClient().getId());
 
                 startActivity(intent);
                 return true;

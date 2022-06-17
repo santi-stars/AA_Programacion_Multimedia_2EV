@@ -1,7 +1,6 @@
 package com.svalero.gestitaller.view;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,11 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.svalero.gestitaller.R;
 import com.svalero.gestitaller.contract.AddBikeContract;
-import com.svalero.gestitaller.database.AppDatabase;
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
 import com.svalero.gestitaller.presenter.AddBikePresenter;
@@ -28,6 +25,7 @@ import java.util.ArrayList;
 public class AddBikeView extends AppCompatActivity implements AddBikeContract.View {
 
     private Bike bike;
+    private Client client;
 
     private Button addButton;
     private ImageView bikeImage;
@@ -63,6 +61,7 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
 
         presenter = new AddBikePresenter(this);
         bike = new Bike();
+        client = new Client();
         clients = new ArrayList<>();
 
         presenter.loadClientsSpinner(); //MVP
@@ -101,7 +100,8 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
         // Si se está editando la moto, obtiene los datos de la moto y los pinta en el formulario
         if (modifyBike) {
             bike.setId(intent.getIntExtra("id", 0));
-            bike.setClientId(intent.getIntExtra("clientId", 0));
+            client.setId(intent.getIntExtra("clientId", 0));
+            bike.setClient(client);
 
             if (intent.getByteArrayExtra("bike_image") != null) {
                 bikeImage.setImageBitmap(ImageUtils.getBitmap(intent.getByteArrayExtra("bike_image")));
@@ -119,7 +119,8 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
         bike.setBrand(etBrand.getText().toString().trim());
         bike.setModel(etModel.getText().toString().trim());
         bike.setLicensePlate(etLicensePlate.getText().toString().trim());
-        bike.setClientId(clients.get(clientSpinner.getSelectedItemPosition()).getId());
+        client.setId(clients.get(clientSpinner.getSelectedItemPosition()).getId());
+        bike.setClient(client);
         bike.setBikeImage(ImageUtils.fromImageViewToByteArray(bikeImage));
 
         presenter.addBike(bike, modifyBike);

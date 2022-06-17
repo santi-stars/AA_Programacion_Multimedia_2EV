@@ -11,21 +11,22 @@ import java.util.Arrays;
 public class Bike implements Comparable<Bike> {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private int id;     // TODO en la API es LONG!!!
     @ColumnInfo
     private String brand;
     @ColumnInfo
     private String model;
     @ColumnInfo
     private String licensePlate;
-    @ColumnInfo
-    private int clientId;
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
     private byte[] bikeImage;
-
     @Ignore
+    private Client client;   // TODO en API contiene un objeto cliente entero, sacar el ID
+
+
     public Bike() {
     }
+
 
     @Ignore
     public Bike(Bike bike) {
@@ -33,19 +34,20 @@ public class Bike implements Comparable<Bike> {
         this.brand = bike.getBrand();
         this.model = bike.getModel();
         this.licensePlate = bike.getLicensePlate();
-        this.clientId = bike.getClientId();
+        this.client = bike.getClient();
         this.bikeImage = bike.getBikeImage();
     }
 
-
-    public Bike(int id, String brand, String model, String licensePlate, int clientId, byte[] bikeImage) {
+    @Ignore
+    public Bike(int id, String brand, String model, String licensePlate, Client client, byte[] bikeImage) {
         this.id = id;
         this.brand = brand;
         this.model = model;
         this.licensePlate = licensePlate;
-        this.clientId = clientId;
+        this.client = client;
         this.bikeImage = bikeImage;
     }
+
 
     public int getId() {
         return id;
@@ -79,12 +81,12 @@ public class Bike implements Comparable<Bike> {
         this.licensePlate = licensePlate;
     }
 
-    public int getClientId() {
-        return clientId;
+    public Client getClient() {
+        return client;
     }
 
-    public void setClientId(int clientId) {
-        this.clientId = clientId;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public byte[] getBikeImage() {
@@ -102,7 +104,7 @@ public class Bike implements Comparable<Bike> {
                 ", brand='" + brand + '\'' +
                 ", model='" + model + '\'' +
                 ", licensePlate='" + licensePlate + '\'' +
-                ", clientId=" + clientId +
+                ", clientId=" + client +
                 ", bikeImage=" + Arrays.toString(bikeImage) +
                 '}';
     }

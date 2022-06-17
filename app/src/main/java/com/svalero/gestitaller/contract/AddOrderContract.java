@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
-import com.svalero.gestitaller.domain.Order;
+import com.svalero.gestitaller.domain.WorkOrder;
 
 import java.util.ArrayList;
 
@@ -12,9 +12,9 @@ public interface AddOrderContract {
     interface Model {
         void startDb(Context context);
 
-        void insertOrder(Order order);
+        void insertOrder(WorkOrder workOrder);
 
-        void updateOrder(Order order);
+        void updateOrder(WorkOrder workOrder);
 
         ArrayList<Bike> clientBikes(int clientId, Context context);
 
@@ -30,7 +30,7 @@ public interface AddOrderContract {
     }
 
     interface Presenter {
-        void addOrder(Order order, Boolean modifyOrder);
+        void addOrder(WorkOrder workOrder, Boolean modifyOrder);
 
         void fillBikeSpinner(int clientId);
 

@@ -8,7 +8,7 @@ import com.svalero.gestitaller.contract.AddOrderContract;
 import com.svalero.gestitaller.database.AppDatabase;
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
-import com.svalero.gestitaller.domain.Order;
+import com.svalero.gestitaller.domain.WorkOrder;
 
 import java.util.ArrayList;
 
@@ -24,13 +24,13 @@ public class AddOrderModel implements AddOrderContract.Model {
     }
 
     @Override
-    public void insertOrder(Order order) {
-        db.orderDao().insert(order);
+    public void insertOrder(WorkOrder workOrder) {
+        db.orderDao().insert(workOrder);
     }
 
     @Override
-    public void updateOrder(Order order) {
-        db.orderDao().update(order);
+    public void updateOrder(WorkOrder workOrder) {
+        db.orderDao().update(workOrder);
     }
 
     @Override
@@ -38,7 +38,8 @@ public class AddOrderModel implements AddOrderContract.Model {
         db = Room.databaseBuilder(context,
                 AppDatabase.class, "bike").allowMainThreadQueries()
                 .fallbackToDestructiveMigration().build();
-        return (ArrayList<Bike>) db.bikeDao().getBikesByClientId(clientId);
+        //return (ArrayList<Bike>) db.bikeDao().getBikesByClientId(clientId);
+        return null;
     }
 
     @Override

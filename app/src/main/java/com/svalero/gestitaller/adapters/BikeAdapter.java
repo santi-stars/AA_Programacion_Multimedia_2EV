@@ -14,14 +14,15 @@ import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.util.ImageUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BikeAdapter extends BaseAdapter {
 
     private Context context;
-    private ArrayList<Bike> bikeArrayList;
+    private List<Bike> bikeArrayList;
     private LayoutInflater inflater;
 
-    public BikeAdapter(Activity context, ArrayList<Bike> bikeArrayList) {
+    public BikeAdapter(Activity context, List<Bike> bikeArrayList) {
         this.context = context;
         this.bikeArrayList = bikeArrayList;
         inflater = LayoutInflater.from(context);

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
-import com.svalero.gestitaller.domain.Order;
+import com.svalero.gestitaller.domain.WorkOrder;
 import com.svalero.gestitaller.domain.dto.OrderDTO;
 
 import java.util.ArrayList;
@@ -13,9 +13,9 @@ public interface OrderListContract {
     interface Model {
         void startDb(Context context);
 
-        ArrayList<Order> loadAllOrders();
+        ArrayList<WorkOrder> loadAllOrders();
 
-        void deleteOrder(Order order);
+        void deleteOrder(WorkOrder workOrder);
 
         Client loadClientById(int id);
 
@@ -29,6 +29,6 @@ public interface OrderListContract {
     interface Presenter {
         void loadAllOrders();
 
-        void deleteOrder(Order order);
+        void deleteOrder(WorkOrder workOrder);
     }
 }

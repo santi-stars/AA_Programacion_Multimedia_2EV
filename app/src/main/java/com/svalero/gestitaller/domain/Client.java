@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class Client {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private int id;     // TODO en la API es LONG!!!
     @ColumnInfo
     private String name;
     @ColumnInfo

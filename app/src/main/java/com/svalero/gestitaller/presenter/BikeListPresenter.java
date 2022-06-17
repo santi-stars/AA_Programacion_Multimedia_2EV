@@ -5,7 +5,9 @@ import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.model.BikeListModel;
 import com.svalero.gestitaller.view.BikeListView;
 
-public class BikeListPresenter implements BikeListContract.Presenter {
+import java.util.List;
+
+public class BikeListPresenter implements BikeListContract.Presenter, BikeListContract.Model.OnLoadBikesListener {
 
     private BikeListModel model;
     private BikeListView view;
@@ -19,7 +21,7 @@ public class BikeListPresenter implements BikeListContract.Presenter {
 
     @Override
     public void loadAllBikes() {
-        view.listBikes(model.loadAllBikes());
+        model.loadAllBikes(this);
     }
 
     @Override
@@ -42,4 +44,13 @@ public class BikeListPresenter implements BikeListContract.Presenter {
         model.delete(bike);
     }
 
+    @Override   // RETROFIT
+    public void onLoadBikesSuccess(List<Bike> bikes) {
+        view.listBikes(bikes);
+    }
+
+    @Override   // RETROFIT
+    public void onLoadBikesError(String message) {
+
+    }
 }

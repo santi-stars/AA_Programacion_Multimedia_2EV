@@ -7,7 +7,7 @@ import com.svalero.gestitaller.R;
 import com.svalero.gestitaller.contract.AddOrderContract;
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
-import com.svalero.gestitaller.domain.Order;
+import com.svalero.gestitaller.domain.WorkOrder;
 import com.svalero.gestitaller.model.AddOrderModel;
 import com.svalero.gestitaller.view.AddOrderView;
 
@@ -25,26 +25,31 @@ public class AddOrderPresenter implements AddOrderContract.Presenter {
     }
 
     @Override
-    public void addOrder(Order order, Boolean modifyOrder) {
+    public void addOrder(WorkOrder workOrder, Boolean modifyOrder) {
+
+        Bike bike = new Bike();
+        Client client = new Client();
 
         model.startDb(view.getApplicationContext());
 
         if (view.getBikeSpinner().getCount() == 0) {
             Toast.makeText(context, R.string.select_bike, Toast.LENGTH_SHORT).show();
-        } else if ((order.getDescription().equals("")) || (order.getDate() == null)) {
+        } else if ((workOrder.getDescription().equals("")) || (workOrder.getOrderDate() == null)) {
             Toast.makeText(context, R.string.complete_all_fields, Toast.LENGTH_SHORT).show();
         } else {
-            order.setClientId(view.getClients().get(view.getClientSpinner().getSelectedItemPosition()).getId());
-            order.setBikeId(view.getBikes().get(view.getBikeSpinner().getSelectedItemPosition()).getId());
+            client.setId(view.getClients().get(view.getClientSpinner().getSelectedItemPosition()).getId());
+            workOrder.setClient(client);
+            bike.setId(view.getBikes().get(view.getBikeSpinner().getSelectedItemPosition()).getId());
+            workOrder.setBike(bike);
 
             if (modifyOrder) {
                 view.setModifyOrder(false);
                 view.getAddButton().setText(R.string.add_button);
-                model.updateOrder(order);
+                model.updateOrder(workOrder);
                 Toast.makeText(context, R.string.modified_order, Toast.LENGTH_SHORT).show();
             } else {
-                order.setId(0);
-                model.insertOrder(order);
+                workOrder.setId(0);
+                model.insertOrder(workOrder);
                 Toast.makeText(context, R.string.added_order, Toast.LENGTH_SHORT).show();
             }
             view.cleanForm();

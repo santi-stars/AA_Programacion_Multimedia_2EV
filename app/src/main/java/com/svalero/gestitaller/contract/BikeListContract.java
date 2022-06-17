@@ -5,12 +5,21 @@ import android.content.Context;
 import com.svalero.gestitaller.domain.Bike;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface BikeListContract {
     interface Model {
+        interface OnLoadBikesListener {
+            void onLoadBikesSuccess(List<Bike> bikes);
+
+            void onLoadBikesError(String message);
+        }
+
         void startDb(Context context);
 
-        ArrayList<Bike> loadAllBikes();
+        void loadAllBikes(OnLoadBikesListener listener);
+
+        ArrayList<Bike> loadAllBikesArray();
 
         ArrayList<Bike> loadBikesByBrand(String query);
 
@@ -22,8 +31,9 @@ public interface BikeListContract {
     }
 
     interface View {
-        void listBikes(ArrayList<Bike> bikes);
+        void listBikes(List<Bike> bikes);
 
+        void showMessage(String message);
     }
 
     interface Presenter {
