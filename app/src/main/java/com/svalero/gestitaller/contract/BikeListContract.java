@@ -15,19 +15,23 @@ public interface BikeListContract {
             void onLoadBikesError(String message);
         }
 
+        interface OnDeleteBikeListener{
+            void onDeleteBikeSuccess(String message);
+
+            void onDeleteBikeError(String message);
+        }
+
         void startDb(Context context);
 
         void loadAllBikes(OnLoadBikesListener listener);
 
-        ArrayList<Bike> loadAllBikesArray();
+        void loadBikesByBrand(OnLoadBikesListener listener, String query);
 
-        ArrayList<Bike> loadBikesByBrand(String query);
+        void loadBikesByModel(OnLoadBikesListener listener, String query);
 
-        ArrayList<Bike> loadBikesByModel(String query);
+        void loadBikesByLicensePlate(OnLoadBikesListener listener, String query);
 
-        ArrayList<Bike> loadBikesByLicensePlate(String query);
-
-        void delete(Bike bike);
+        void delete(OnDeleteBikeListener listener, Bike bike);
     }
 
     interface View {

@@ -35,17 +35,50 @@ public class BikeListModel implements BikeListContract.Model {
     }
 
     @Override
-    public ArrayList<Bike> loadAllBikesArray() {
-        return (ArrayList<Bike>) db.bikeDao().getAll();
-    }
-
-    @Override
     public void loadAllBikes(OnLoadBikesListener listener) {
         bikes.clear();
 
-        Call<List<Bike>> callBikes = api.getBikes();
+        Call<List<Bike>> bikeCall = api.getBikes();
 
-        callBikes.enqueue(new Callback<List<Bike>>() {
+        loadBikesCallEnqueue(listener, bikeCall);
+    }
+
+    @Override
+    public void loadBikesByBrand(OnLoadBikesListener listener, String query) {
+        bikes.clear();
+
+        Call<List<Bike>> bikeCall = api.getBikesByBrand(query);
+
+        loadBikesCallEnqueue(listener, bikeCall);
+    }
+
+    @Override
+    public void loadBikesByModel(OnLoadBikesListener listener, String query) {
+        bikes.clear();
+
+        Call<List<Bike>> bikeCall = api.getBikesByModel(query);
+
+        loadBikesCallEnqueue(listener, bikeCall);
+    }
+
+    @Override
+    public void loadBikesByLicensePlate(OnLoadBikesListener listener, String query) {
+        bikes.clear();
+
+        Call<List<Bike>> bikesCall = api.getBikesByLicense(query);
+
+        loadBikesCallEnqueue(listener, bikesCall);
+    }
+
+    /**
+     * Envía la solicitud de forma asíncrona y notifica la devolución de llamada de su respuesta
+     * o si se produjo un error al hablar con el servidor, crear la solicitud o procesar la respuesta.
+     *
+     * @param listener OnLoadBikesListener
+     * @param call     Lista de Bikes
+     */
+    private void loadBikesCallEnqueue(OnLoadBikesListener listener, Call<List<Bike>> call) {
+        call.enqueue(new Callback<List<Bike>>() {
             @Override
             public void onResponse(Call<List<Bike>> call, Response<List<Bike>> response) {
                 bikes = response.body();
@@ -61,22 +94,20 @@ public class BikeListModel implements BikeListContract.Model {
     }
 
     @Override
-    public ArrayList<Bike> loadBikesByBrand(String query) {
-        return (ArrayList<Bike>) db.bikeDao().getByBrandString(query);
-    }
+    public void delete(OnDeleteBikeListener listener, Bike bike) {
+        Call<Void> bikeCall = api.deleteBike(bike.getId());
+        // db.bikeDao().delete(bike);
+        bikeCall.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                listener.onDeleteBikeSuccess("Moto eliminada correctamente");
+            }
 
-    @Override
-    public ArrayList<Bike> loadBikesByModel(String query) {
-        return (ArrayList<Bike>) db.bikeDao().getByModelString(query);
-    }
-
-    @Override
-    public ArrayList<Bike> loadBikesByLicensePlate(String query) {
-        return (ArrayList<Bike>) db.bikeDao().getByLicensePlateString(query);
-    }
-
-    @Override
-    public void delete(Bike bike) {
-        db.bikeDao().delete(bike);
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                listener.onDeleteBikeError("No se ha podido eliminar la moto");
+                t.printStackTrace();
+            }
+        });
     }
 }

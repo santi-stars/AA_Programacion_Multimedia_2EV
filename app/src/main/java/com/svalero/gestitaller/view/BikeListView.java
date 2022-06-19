@@ -118,7 +118,6 @@ public class BikeListView extends AppCompatActivity implements BikeListContract.
         if (query.equalsIgnoreCase(DEFAULT_STRING)) {
             presenter.loadAllBikes();
         } else {
-            query = "%" + query + "%";
             switch (findSpinner.getSelectedItemPosition()) {
                 case 0:
                     presenter.loadBikesByBrand(query);

@@ -7,7 +7,7 @@ import com.svalero.gestitaller.view.BikeListView;
 
 import java.util.List;
 
-public class BikeListPresenter implements BikeListContract.Presenter, BikeListContract.Model.OnLoadBikesListener {
+public class BikeListPresenter implements BikeListContract.Presenter, BikeListContract.Model.OnLoadBikesListener, BikeListContract.Model.OnDeleteBikeListener {
 
     private BikeListModel model;
     private BikeListView view;
@@ -26,31 +26,41 @@ public class BikeListPresenter implements BikeListContract.Presenter, BikeListCo
 
     @Override
     public void loadBikesByBrand(String query) {
-        view.listBikes(model.loadBikesByBrand(query));
+        model.loadBikesByBrand(this, query);
     }
 
     @Override
     public void loadBikesByModel(String query) {
-        view.listBikes(model.loadBikesByModel(query));
+        model.loadBikesByModel(this, query);
     }
 
     @Override
     public void loadBikesByLicensePlate(String query) {
-        view.listBikes(model.loadBikesByLicensePlate(query));
+        model.loadBikesByLicensePlate(this, query);
     }
 
-    @Override
-    public void deleteBike(Bike bike) {
-        model.delete(bike);
-    }
-
-    @Override   // RETROFIT
+    @Override   // OnLoadBikesListener SUCCESS
     public void onLoadBikesSuccess(List<Bike> bikes) {
         view.listBikes(bikes);
     }
 
-    @Override   // RETROFIT
+    @Override   // OnLoadBikesListener ERROR
     public void onLoadBikesError(String message) {
+        // TODO view.showMessage(message);
+    }
 
+    @Override
+    public void deleteBike(Bike bike) {
+        model.delete(this, bike);
+    }
+
+    @Override   // OnDeleteBikesListener SUCCESS
+    public void onDeleteBikeSuccess(String message) {
+        // TODO view.showMessage(message);
+    }
+
+    @Override   // OnDeleteBikesListener ERROR
+    public void onDeleteBikeError(String message) {
+        // TODO view.showMessage(message);
     }
 }
