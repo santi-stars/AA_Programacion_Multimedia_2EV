@@ -210,6 +210,8 @@ public class OrderListView extends AppCompatActivity implements OrderListContrac
         super.onCreateContextMenu(menu, v, menuInfo);
 
         getMenuInflater().inflate(R.menu.listview_menu, menu);
+        MenuItem menuItem = menu.findItem(R.id.add_menu);
+        menuItem.setTitle("➕ AÑADIR");
 
     }
 

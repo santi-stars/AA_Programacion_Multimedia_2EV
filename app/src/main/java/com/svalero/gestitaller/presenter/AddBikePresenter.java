@@ -1,48 +1,84 @@
 package com.svalero.gestitaller.presenter;
 
+import android.content.Context;
 import android.widget.Toast;
 
 import com.svalero.gestitaller.R;
 import com.svalero.gestitaller.contract.AddBikeContract;
 import com.svalero.gestitaller.domain.Bike;
+import com.svalero.gestitaller.domain.Client;
+import com.svalero.gestitaller.domain.dto.BikeDTO;
 import com.svalero.gestitaller.model.AddBikeModel;
 import com.svalero.gestitaller.view.AddBikeView;
 
-public class AddBikePresenter implements AddBikeContract.Presenter {
+import java.util.List;
+
+public class AddBikePresenter implements AddBikeContract.Presenter, AddBikeContract.Model.OnLoadClientsListener, AddBikeContract.Model.OnAddBikeListener, AddBikeContract.Model.OnModifyBikeListener {
 
     private AddBikeModel model;
     private AddBikeView view;
+    private Context context;
 
     public AddBikePresenter(AddBikeView view) {
-        model = new AddBikeModel();
+        this.context = view.getApplicationContext();
         this.view = view;
+
+        model = new AddBikeModel();
+        model.startDb(context);
     }
 
     @Override
     public void loadClientsSpinner() {
-        view.loadClientSpinner(model.loadAllClient(view.getApplicationContext()));
+        model.loadAllClient(this);
     }
 
     @Override
-    public void addBike(Bike bike, Boolean modifyBike) {
+    public void addOrModifyBike(BikeDTO bikeDTO, Boolean modifyBike) {
 
-        model.startDb(view.getApplicationContext());
-
-        if ((bike.getBrand().equals("")) || (bike.getModel().equals("")) || (bike.getLicensePlate().equals(""))) {
-            Toast.makeText(view.getApplicationContext(), R.string.complete_all_fields, Toast.LENGTH_SHORT).show();
+        if ((bikeDTO.getBrand().equals("")) || (bikeDTO.getModel().equals("")) || (bikeDTO.getLicensePlate().equals(""))) {
+            view.showMessage(R.string.complete_all_fields);
         } else {
-
             if (modifyBike) {
                 view.setModifyBike(false);
                 view.getAddButton().setText(R.string.add_button);
-                model.updateBike(bike);
-                Toast.makeText(view.getApplicationContext(), R.string.modified_bike, Toast.LENGTH_SHORT).show();
+                model.modifyBike(this, bikeDTO);
             } else {
-                bike.setId(0);
-                model.insertBike(bike);
-                Toast.makeText(view.getApplicationContext(), R.string.added_bike, Toast.LENGTH_SHORT).show();
+                bikeDTO.setId(0);
+                model.addBike(this, bikeDTO);
             }
-            view.cleanForm();
         }
+
+    }
+
+    @Override
+    public void onLoadClientsSuccess(List<Client> clients) {
+        view.loadClientSpinner(clients);
+    }
+
+    @Override
+    public void onLoadClientsError(int message) {
+        view.showMessage(message);
+    }
+
+    @Override
+    public void onAddBikeSuccess(int message) {
+        view.showMessage(message);
+        view.cleanForm();
+    }
+
+    @Override
+    public void onAddBikeError(int message) {
+        view.showMessage(message);
+    }
+
+    @Override
+    public void onModifyBikeSuccess(int message) {
+        view.showMessage(message);
+        view.cleanForm();
+    }
+
+    @Override
+    public void onModifyBikeError(int message) {
+        view.showMessage(message);
     }
 }

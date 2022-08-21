@@ -29,6 +29,7 @@ public class Client {
 
     @Ignore
     public Client() {
+        this.setId(0);
     }
 
     public Client(int id, String name, String surname, String dni, boolean vip, float latitude, float longitude, byte[] clientImage) {

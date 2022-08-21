@@ -14,14 +14,15 @@ import com.svalero.gestitaller.domain.Client;
 import com.svalero.gestitaller.util.ImageUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ClientAdapter extends BaseAdapter {
 
     private Context context;
-    private ArrayList<Client> clientArrayList;
+    private List<Client> clientArrayList;
     private LayoutInflater inflater;
 
-    public ClientAdapter(Activity context, ArrayList<Client> clientArrayList) {
+    public ClientAdapter(Activity context, List<Client> clientArrayList) {
         this.context = context;
         this.clientArrayList = clientArrayList;
         inflater = LayoutInflater.from(context);

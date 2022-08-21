@@ -1,53 +1,32 @@
-package com.svalero.gestitaller.domain;
+package com.svalero.gestitaller.domain.dto;
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
 import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
 
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Objects;
 
-@Entity
-public class Bike implements Comparable<Bike> {
+public class BikeDTO {
 
-    @PrimaryKey(autoGenerate = true)
     private int id;
-    @ColumnInfo
     private String brand;
-    @ColumnInfo
     private String model;
-    @ColumnInfo
     private String licensePlate;
-    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
     private byte[] bikeImage;
+    private int client;
+
     @Ignore
-    private Client client;
-
-
-    public Bike() {
+    public BikeDTO() {
     }
 
-
-    @Ignore
-    public Bike(Bike bike) {
-        this.id = bike.getId();
-        this.brand = bike.getBrand();
-        this.model = bike.getModel();
-        this.licensePlate = bike.getLicensePlate();
-        this.client = bike.getClient();
-        this.bikeImage = bike.getBikeImage();
-    }
-
-    @Ignore
-    public Bike(int id, String brand, String model, String licensePlate, Client client, byte[] bikeImage) {
+    public BikeDTO(int id, String brand, String model, String licensePlate, byte[] bikeImage, int client) {
         this.id = id;
         this.brand = brand;
         this.model = model;
         this.licensePlate = licensePlate;
-        this.client = client;
         this.bikeImage = bikeImage;
+        this.client = client;
     }
-
 
     public int getId() {
         return id;
@@ -81,14 +60,6 @@ public class Bike implements Comparable<Bike> {
         this.licensePlate = licensePlate;
     }
 
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
     public byte[] getBikeImage() {
         return bikeImage;
     }
@@ -97,21 +68,23 @@ public class Bike implements Comparable<Bike> {
         this.bikeImage = bikeImage;
     }
 
+    public int getClient() {
+        return client;
+    }
+
+    public void setClient(int client) {
+        this.client = client;
+    }
+
     @Override
     public String toString() {
-        return "Bike{" +
+        return "BikeDTO{" +
                 "id=" + id +
                 ", brand='" + brand + '\'' +
                 ", model='" + model + '\'' +
                 ", licensePlate='" + licensePlate + '\'' +
-                ", clientId=" + client +
                 ", bikeImage=" + Arrays.toString(bikeImage) +
+                ", client=" + client +
                 '}';
     }
-
-    @Override
-    public int compareTo(Bike o) {
-        return brand.compareTo(o.brand);
-    }
 }
-

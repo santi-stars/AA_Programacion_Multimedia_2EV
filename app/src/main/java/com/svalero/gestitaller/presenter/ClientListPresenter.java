@@ -5,7 +5,9 @@ import com.svalero.gestitaller.domain.Client;
 import com.svalero.gestitaller.model.ClientListModel;
 import com.svalero.gestitaller.view.ClientListView;
 
-public class ClientListPresenter implements ClientListContract.Presenter {
+import java.util.List;
+
+public class ClientListPresenter implements ClientListContract.Presenter, ClientListContract.Model.OnLoadClientsListener, ClientListContract.Model.OnDeleteClientListener {
 
     private ClientListModel model;
     private ClientListView view;
@@ -19,26 +21,48 @@ public class ClientListPresenter implements ClientListContract.Presenter {
 
     @Override
     public void loadAllClients() {
-        view.listClients(model.loadAllClients());
+        model.loadAllClients(this);
     }
 
     @Override
     public void loadClientsByName(String query) {
-        view.listClients(model.loadClientsByName(query));
+        model.loadClientsByName(this, query);
     }
 
     @Override
     public void loadClientsBySurname(String query) {
-        view.listClients(model.loadClientsBySurname(query));
+        model.loadClientsBySurname(this, query);
     }
 
     @Override
     public void loadClientsByDni(String query) {
-        view.listClients(model.loadClientsByDni(query));
+        model.loadClientsByDni(this, query);
+    }
+
+    @Override   // OnLoadClientsListener SUCCESS
+    public void onLoadClientsSuccess(List<Client> clients) {
+        view.listClients(clients);
+    }
+
+    @Override      // OnLoadClientsListener ERROR
+    public void onLoadClientsError(int message) {
+        view.showMessage(message);
     }
 
     @Override
     public void deleteClient(Client client) {
-        model.deleteClient(client);
+        model.deleteClient(this, client);
+    }
+
+
+    @Override   // OnDeleteClientsListener SUCCESS
+    public void onDeleteClientSuccess(int message) {
+        view.showMessage(message);
+        view.refreshList();
+    }
+
+    @Override   // OnDeleteClientsListener ERROR
+    public void onDeleteClientError(int message) {
+        view.showMessage(message);
     }
 }

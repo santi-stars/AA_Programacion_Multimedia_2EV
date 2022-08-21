@@ -9,6 +9,7 @@ import androidx.room.Room;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.svalero.gestitaller.R;
 import com.svalero.gestitaller.adapters.ClientAdapter;
@@ -30,31 +32,40 @@ import com.svalero.gestitaller.presenter.ClientListPresenter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 public class ClientListView extends AppCompatActivity implements ClientListContract.View,
         AdapterView.OnItemClickListener, DetailFragment.closeDetails {
 
-    public ArrayList<Client> clients;
+    public List<Client> clients;
     public ClientAdapter clientArrayAdapter;
+    public Spinner findSpinner;
+    private boolean favorites;
     private String orderBy;
     private FrameLayout frameLayout;
-    public Spinner findSpinner;
     private final String[] FIND_SPINNER_OPTIONS = new String[]{"Nombre", "Apellido", "Dni"};
     private final String DEFAULT_STRING = "";
     private ClientListPresenter presenter;
+    private AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_client);
 
-        presenter = new ClientListPresenter(this);
+        db = Room.databaseBuilder(this,
+                        AppDatabase.class, "client").allowMainThreadQueries()
+                .fallbackToDestructiveMigration().build();
+
         clients = new ArrayList<>();
+        presenter = new ClientListPresenter(this);
+        clientArrayAdapter = new ClientAdapter(this, clients);
         frameLayout = findViewById(R.id.frame_layout_client);
         findSpinner = findViewById(R.id.find_spinner_view_client);
         ArrayAdapter<String> adapterSpinner = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, FIND_SPINNER_OPTIONS);
         findSpinner.setAdapter(adapterSpinner);
         orderBy = DEFAULT_STRING;
+        favorites = false;
 
         findClientsBy(DEFAULT_STRING);
     }
@@ -69,6 +80,7 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.client_actionbar, menu);
+
         final MenuItem searchItem = menu.findItem(R.id.app_bar_client_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
@@ -89,17 +101,26 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
     }
 
     @Override
-    public void listClients(ArrayList<Client> clients) {
+    public void listClients(List<Client> clients) {
 
         ListView clientsListView = findViewById(R.id.client_lisview);
         registerForContextMenu(clientsListView);
         this.clients = clients;
 
-        clientArrayAdapter = new ClientAdapter(this, clients);
+        clientArrayAdapter = new ClientAdapter(this, this.clients);
 
         clientsListView.setAdapter(clientArrayAdapter);
         clientsListView.setOnItemClickListener(this);
 
+    }
+
+    @Override
+    public void showMessage(int message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public void refreshList() {
+        clientArrayAdapter.notifyDataSetChanged();
     }
 
     private void findClientsBy(String query) {
@@ -108,7 +129,7 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
         if (query.equalsIgnoreCase(DEFAULT_STRING)) {
             presenter.loadAllClients();
         } else {
-            query = "%" + query + "%";
+
             switch (findSpinner.getSelectedItemPosition()) {
                 case 0:
                     presenter.loadClientsByName(query);
@@ -120,6 +141,7 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
                     presenter.loadClientsByDni(query);
                     break;
             }
+
         }
         orderBy(orderBy);
     }
@@ -127,22 +149,43 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
     private void orderBy(String orderBy) {
         this.orderBy = orderBy;
 
-        Collections.sort(clients, new Comparator<Client>() {
-            @Override
-            public int compare(Client o1, Client o2) {
-                switch (orderBy) {
-                    case "name":
-                        return o1.getName().compareToIgnoreCase(o2.getName());
-                    case "surname":
-                        return o1.getSurname().compareToIgnoreCase(o2.getSurname());
-                    case "dni":
-                        return o1.getDni().compareToIgnoreCase(o2.getDni());
-                    default:
-                        return String.valueOf(o1.getId()).compareTo(String.valueOf(o2.getId()));
-                }
+        if (orderBy.equalsIgnoreCase("FAVORITOS")) {
+
+            if (favorites) {
+                this.orderBy = DEFAULT_STRING;
+                findClientsBy(DEFAULT_STRING);
+            } else {
+                clients.clear();
+                clients.addAll(db.clientDao().getAll());
             }
-        });
+
+        } else {
+
+            Collections.sort(clients, new Comparator<Client>() {
+                @Override
+                public int compare(Client o1, Client o2) {
+                    switch (orderBy) {
+                        case "name":
+                            return o1.getName().compareToIgnoreCase(o2.getName());
+                        case "surname":
+                            return o1.getSurname().compareToIgnoreCase(o2.getSurname());
+                        case "dni":
+                            return o1.getDni().compareToIgnoreCase(o2.getDni());
+                        default:
+                            return String.valueOf(o1.getId()).compareTo(String.valueOf(o2.getId()));
+                    }
+                }
+            });
+
+        }
         clientArrayAdapter.notifyDataSetChanged();
+    }
+
+    private void favorites() {
+
+        // TODO crear función para añadir a favoritos
+        // TODO booleana FAV para cambiar ELIMINAR por ELIMINAR FAV y modificar método deleteClient
+
     }
 
     /**
@@ -157,6 +200,16 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
         switch (item.getItemId()) {
             case R.id.order_by_default_item:
                 orderBy("");
+                return true;
+            case R.id.order_by_favorite_item:
+                orderBy("FAVORITOS");
+                if (favorites) {
+                    item.setTitle("\uD83D\uDC96 FAVORITOS \uD83D\uDC96");
+                    favorites = false;
+                } else {
+                    item.setTitle("👨‍👩‍👧‍👧 TODOS 👨‍👩‍👧‍👧");
+                    favorites = true;
+                }
                 return true;
             case R.id.order_by_name_item:
                 orderBy("name");
@@ -185,7 +238,12 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
         super.onCreateContextMenu(menu, v, menuInfo);
 
         getMenuInflater().inflate(R.menu.listview_menu, menu);
-
+        MenuItem menuItem = menu.findItem(R.id.add_menu);
+        if (favorites) {
+            menuItem.setTitle("\uD83D\uDCA5 ELIMINAR de FAVORITOS");
+        } else {
+            menuItem.setTitle("\uD83D\uDC96 AÑADIR A FAVORITOS");
+        }
     }
 
     /**
@@ -220,8 +278,20 @@ public class ClientListView extends AppCompatActivity implements ClientListContr
             case R.id.detail_menu:                      // Detalles del cliente
                 showDetails(info.position);
                 return true;
-            case R.id.add_menu:                         // Añadir cliente
-                startActivity(intent);
+            case R.id.add_menu:
+                if (favorites) {
+                    db.clientDao().delete(clients.get(info.position));
+                    showMessage(R.string.deleted_from_fav);
+                    clients.remove(clients.get(info.position));
+                    clientArrayAdapter.notifyDataSetChanged();
+                } else {
+                    try {
+                        db.clientDao().insert(clients.get(info.position));
+                        showMessage(R.string.added_to_fav_success);
+                    } catch (Exception ex) {
+                        showMessage(R.string.added_to_fav_error);
+                    }
+                }
                 return true;
             case R.id.delete_menu:                      // Eliminar cliente
                 deleteClient(info);

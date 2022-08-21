@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuItemCompat;
 
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -171,7 +172,8 @@ public class BikeListView extends AppCompatActivity implements BikeListContract.
         super.onCreateContextMenu(menu, v, menuInfo);
 
         getMenuInflater().inflate(R.menu.listview_menu, menu);
-
+        MenuItem menuItem = menu.findItem(R.id.add_menu);
+        menuItem.setTitle("➕ AÑADIR");
     }
 
     /**

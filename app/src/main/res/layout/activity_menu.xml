@@ -46,7 +46,7 @@
             android:layout_gravity="center"
             android:layout_margin="12dp"
             android:background="@drawable/custom_button"
-            android:backgroundTint="#E5BE01"
+            android:backgroundTint="#2BD3E8"
             android:onClick="addClient"
             android:src="@android:drawable/ic_menu_add" />
 
@@ -57,7 +57,7 @@
             android:layout_gravity="center"
             android:layout_margin="12dp"
             android:background="@drawable/custom_button"
-            android:backgroundTint="#E5BE01"
+            android:backgroundTint="#2BD3E8"
             android:onClick="viewClient"
             android:src="?android:attr/actionModeFindDrawable" />
 
@@ -115,7 +115,7 @@
             android:layout_gravity="center"
             android:layout_margin="6dp"
             android:background="@drawable/custom_button"
-            android:backgroundTint="#E5BE01"
+            android:backgroundTint="#FF2BD3E8"
             android:onClick="addBike"
             android:src="@android:drawable/ic_menu_add" />
 
@@ -126,7 +126,7 @@
             android:layout_gravity="center"
             android:layout_margin="6dp"
             android:background="@drawable/custom_button"
-            android:backgroundTint="#E5BE01"
+            android:backgroundTint="#FF2BD3E8"
             android:onClick="viewBike"
             android:src="?android:attr/actionModeFindDrawable" />
 
@@ -158,7 +158,7 @@
             android:layout_gravity="center"
             android:layout_margin="6dp"
             android:background="@drawable/custom_button"
-            android:backgroundTint="#E5BE01"
+            android:backgroundTint="#FF2BD3E8"
             android:onClick="addOrder"
             android:src="@android:drawable/ic_menu_add" />
 
@@ -169,7 +169,7 @@
             android:layout_gravity="center"
             android:layout_margin="6dp"
             android:background="@drawable/custom_button"
-            android:backgroundTint="#E5BE01"
+            android:backgroundTint="#FF2BD3E8"
             android:onClick="viewOrder"
             android:src="?android:attr/actionModeFindDrawable" />
 

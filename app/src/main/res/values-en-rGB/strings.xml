@@ -33,6 +33,18 @@
     <string name="added_client">Added client</string>
     <string name="modified_client">Modified client</string>
     <string name="select_map_position">Select a position on the map</string>
-    <string name="added_bike">Moto añadida</string>
-    <string name="modified_bike">Moto modificada</string>
+    <string name="added_bike_success">Moto añadida</string>
+    <string name="modified_bike_success">Moto modificada</string>
+    <string name="added_client_success">Client added successfully</string>
+    <string name="added_client_error">The client couldn\'t be added</string>
+    <string name="modified_client_success">Client modified successfully</string>
+    <string name="modified_client_error">The client couldn\'t be modified</string>
+    <string name="error_ocurred">An error has occurred</string>
+    <string name="client_deleted_successfully">Client deleted successfully</string>
+    <string name="client_delete_error">The client couldn\'t be deleted</string>
+    <string name="added_bike_error">The bike couldn\'t be added</string>
+    <string name="modified_bike_error">The bike couldn\'t be modified</string>
+    <string name="added_to_fav_success">Added to FAVORITES 💖</string>
+    <string name="added_to_fav_error">It\'s already in FAVORITES 💖</string>
+    <string name="deleted_from_fav">💥 Deleted from FAVORITES 💖</string>
 </resources>
