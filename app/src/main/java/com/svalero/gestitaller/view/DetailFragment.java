@@ -81,6 +81,7 @@ public class DetailFragment extends Fragment {
             case VIEW_BIKE_ACTIVITY:    // TODO fragment de detalles de motos para otro dia
                 break;
             case VIEW_CLIENT_ACTIVITY:
+                imageView.setImageResource(R.drawable.client);
                 if (getArguments() != null) {
                     if (getArguments().getByteArray("client_image") != null)
                         imageView.setImageBitmap

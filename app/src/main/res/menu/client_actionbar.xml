@@ -15,6 +15,10 @@
         android:title="Ordenar por:" />
 
     <item
+        android:id="@+id/order_by_favorite_item"
+        android:title="💖 FAVORITOS 💖" />
+
+    <item
         android:id="@+id/order_by_name_item"
         android:title="nombre" />
 

@@ -9,12 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.room.Room;
-
 import com.svalero.gestitaller.R;
-import com.svalero.gestitaller.database.AppDatabase;
-import com.svalero.gestitaller.domain.Bike;
-import com.svalero.gestitaller.domain.Order;
 import com.svalero.gestitaller.domain.dto.OrderDTO;
 import com.svalero.gestitaller.util.DateUtils;
 import com.svalero.gestitaller.util.ImageUtils;
@@ -50,7 +45,6 @@ public class OrderAdapter extends BaseAdapter {
         }
         orderDateAndBikeModel.setText(DateUtils.fromLocalDateToMyDateFormatString(orderDTO.getDate()) + " || " + orderDTO.getBikeBrandModel());
         orderLicensePlateAndDescription.setText(orderDTO.getBikeLicensePlate() + " || " + orderDTO.getDescription());
-
 
         return convertView;
     }

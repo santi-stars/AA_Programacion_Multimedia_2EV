@@ -20,9 +20,6 @@ public interface BikeDao {
     @Query("SELECT * FROM bike WHERE id = :id")
     Bike getBikeById(int id);
 
-    @Query("SELECT * FROM bike WHERE clientId = :clientId")
-    List<Bike> getBikesByClientId(int clientId);
-
     @Query("SELECT * FROM bike WHERE brand LIKE :query")
     List<Bike> getByBrandString(String query);
 
@@ -31,6 +28,11 @@ public interface BikeDao {
 
     @Query("SELECT * FROM bike WHERE licensePlate LIKE :query")
     List<Bike> getByLicensePlateString(String query);
+
+    /*
+    @Query("SELECT * FROM bike WHERE clientId = :clientId")
+    List<Bike> getBikesByClientId(int clientId);
+    */
 
     @Insert
     void insert(Bike bike);

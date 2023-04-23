@@ -8,13 +8,13 @@ import java.util.Objects;
 
 public class OrderDTO implements Comparable {
 
-    private int id;     // Order
-    private LocalDate date; // Order
+    private int id;     // WorkOrder
+    private LocalDate date; // WorkOrder
     private String clientNameSurname;  // Client
     private String bikeBrandModel;    // Client
     private String bikeLicensePlate;    // Bike
     private byte[] bikeImageOrder;   // Bike
-    private String description; // Order
+    private String description; // WorkOrder
 
     @Ignore
     public OrderDTO() {

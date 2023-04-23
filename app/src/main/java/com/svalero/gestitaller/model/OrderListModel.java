@@ -8,7 +8,7 @@ import com.svalero.gestitaller.contract.OrderListContract;
 import com.svalero.gestitaller.database.AppDatabase;
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
-import com.svalero.gestitaller.domain.Order;
+import com.svalero.gestitaller.domain.WorkOrder;
 
 import java.util.ArrayList;
 
@@ -30,13 +30,13 @@ public class OrderListModel implements OrderListContract.Model {
     }
 
     @Override
-    public ArrayList<Order> loadAllOrders() {
-        return (ArrayList<Order>) db.orderDao().getAll();
+    public ArrayList<WorkOrder> loadAllOrders() {
+        return (ArrayList<WorkOrder>) db.orderDao().getAll();
     }
 
     @Override
-    public void deleteOrder(Order order) {
-        db.orderDao().delete(order);
+    public void deleteOrder(WorkOrder workOrder) {
+        db.orderDao().delete(workOrder);
     }
 
     @Override

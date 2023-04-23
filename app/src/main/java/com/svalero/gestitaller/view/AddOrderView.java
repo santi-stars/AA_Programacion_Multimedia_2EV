@@ -6,7 +6,6 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,13 +14,12 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.svalero.gestitaller.R;
 import com.svalero.gestitaller.contract.AddOrderContract;
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
-import com.svalero.gestitaller.domain.Order;
+import com.svalero.gestitaller.domain.WorkOrder;
 import com.svalero.gestitaller.presenter.AddOrderPresenter;
 import com.svalero.gestitaller.util.DateUtils;
 
@@ -37,7 +35,7 @@ public class AddOrderView extends AppCompatActivity implements AddOrderContract.
     private Button addButton;
     private Intent intent;
 
-    private Order order;
+    private WorkOrder workOrder;
     private ArrayList<Client> clients;
     private ArrayList<Bike> bikes;
     private boolean modifyOrder;
@@ -78,7 +76,7 @@ public class AddOrderView extends AppCompatActivity implements AddOrderContract.
         tvDate = findViewById(R.id.date_textlabel_add_order);
         addButton = findViewById(R.id.add_order_button);
 
-        order = new Order(0, null, 0, 0, "");
+        workOrder = new WorkOrder(0, null, "", null, null);
 
         presenter = new AddOrderPresenter(this);
         clients = new ArrayList<>();
@@ -131,7 +129,7 @@ public class AddOrderView extends AppCompatActivity implements AddOrderContract.
         modifyOrder = intent.getBooleanExtra("modify_order", false);
 
         if (modifyOrder) {  // Si se edita una moto, obtiene sus datos y los pinta en el formulario
-            order.setId(intent.getIntExtra("id", 0));
+            workOrder.setId(intent.getIntExtra("id", 0));
             tvDate.setText(DateUtils.fromLocalDateToMyDateFormatString
                     (LocalDate.parse(intent.getStringExtra("date"))));
             etDescription.setText(intent.getStringExtra("description"));
@@ -143,10 +141,10 @@ public class AddOrderView extends AppCompatActivity implements AddOrderContract.
     public void addOrder(View view) {
 
         if (!(tvDate.getText().toString().trim()).equalsIgnoreCase(""))
-            order.setDate(DateUtils.fromMyDateFormatStringToLocalDate(tvDate.getText().toString().trim()));
-        order.setDescription(etDescription.getText().toString().trim());
+            workOrder.setOrderDate(DateUtils.fromMyDateFormatStringToLocalDate(tvDate.getText().toString().trim()));
+        workOrder.setDescription(etDescription.getText().toString().trim());
 
-        presenter.addOrder(order, modifyOrder);
+        presenter.addOrder(workOrder, modifyOrder);
 
     }
 
@@ -154,7 +152,7 @@ public class AddOrderView extends AppCompatActivity implements AddOrderContract.
     public void cleanForm() {
         etDescription.setText("");
         tvDate.setText("");
-        order = new Order(0, null, 0, 0, "");
+        workOrder = new WorkOrder(0, null, "", null, null);
     }
 
     /**

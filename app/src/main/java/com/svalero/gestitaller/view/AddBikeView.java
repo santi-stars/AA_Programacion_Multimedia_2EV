@@ -1,7 +1,6 @@
 package com.svalero.gestitaller.view;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,17 +16,18 @@ import android.widget.Toast;
 
 import com.svalero.gestitaller.R;
 import com.svalero.gestitaller.contract.AddBikeContract;
-import com.svalero.gestitaller.database.AppDatabase;
 import com.svalero.gestitaller.domain.Bike;
 import com.svalero.gestitaller.domain.Client;
+import com.svalero.gestitaller.domain.dto.BikeDTO;
 import com.svalero.gestitaller.presenter.AddBikePresenter;
 import com.svalero.gestitaller.util.ImageUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AddBikeView extends AppCompatActivity implements AddBikeContract.View {
 
-    private Bike bike;
+    private BikeDTO bikeDTO;
 
     private Button addButton;
     private ImageView bikeImage;
@@ -39,7 +39,7 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
     private AddBikePresenter presenter;
 
     private boolean modifyBike;
-    public ArrayList<Client> clients;
+    public List<Client> clients;
 
     public Button getAddButton() {
         return addButton;
@@ -62,7 +62,7 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
         addButton = findViewById(R.id.add_bike_button);
 
         presenter = new AddBikePresenter(this);
-        bike = new Bike();
+        bikeDTO = new BikeDTO();
         clients = new ArrayList<>();
 
         presenter.loadClientsSpinner(); //MVP
@@ -78,7 +78,7 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
     }
 
     @Override
-    public void loadClientSpinner(ArrayList<Client> clients) {
+    public void loadClientSpinner(List<Client> clients) {
 
         this.clients.clear();
         this.clients.addAll(clients);
@@ -98,14 +98,11 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
 
         intent = getIntent();
         modifyBike = intent.getBooleanExtra("modify_bike", false);
-        // Si se está editando la moto, obtiene los datos de la moto y los pinta en el formulario
-        if (modifyBike) {
-            bike.setId(intent.getIntExtra("id", 0));
-            bike.setClientId(intent.getIntExtra("clientId", 0));
 
-            if (intent.getByteArrayExtra("bike_image") != null) {
-                bikeImage.setImageBitmap(ImageUtils.getBitmap(intent.getByteArrayExtra("bike_image")));
-            }
+        if (modifyBike) {
+            bikeDTO.setId(intent.getIntExtra("id", 0));
+            bikeDTO.setClient(intent.getIntExtra("clientId", 0));
+
             etBrand.setText(intent.getStringExtra("brand"));
             etModel.setText(intent.getStringExtra("model"));
             etLicensePlate.setText(intent.getStringExtra("license_plate"));
@@ -114,15 +111,16 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
         }
     }
 
+    @Override
     public void addBike(View view) {
 
-        bike.setBrand(etBrand.getText().toString().trim());
-        bike.setModel(etModel.getText().toString().trim());
-        bike.setLicensePlate(etLicensePlate.getText().toString().trim());
-        bike.setClientId(clients.get(clientSpinner.getSelectedItemPosition()).getId());
-        bike.setBikeImage(ImageUtils.fromImageViewToByteArray(bikeImage));
+        bikeDTO.setBrand(etBrand.getText().toString().trim());
+        bikeDTO.setModel(etModel.getText().toString().trim());
+        bikeDTO.setLicensePlate(etLicensePlate.getText().toString().trim());
+        bikeDTO.setClient(clients.get(clientSpinner.getSelectedItemPosition()).getId());
+        bikeDTO.setBikeImage(null);
 
-        presenter.addBike(bike, modifyBike);
+        presenter.addOrModifyBike(bikeDTO, modifyBike);
 
     }
 
@@ -134,6 +132,11 @@ public class AddBikeView extends AppCompatActivity implements AddBikeContract.Vi
         etModel.setText("");
         etLicensePlate.setText("");
 
+    }
+
+    @Override
+    public void showMessage(int stringRes) {
+        Toast.makeText(this, stringRes, Toast.LENGTH_SHORT).show();
     }
 
     //Método para tomar foto

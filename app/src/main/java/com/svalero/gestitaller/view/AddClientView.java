@@ -11,11 +11,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -101,8 +103,9 @@ public class AddClientView extends AppCompatActivity implements AddClientContrac
             client.setLatitude(intent.getFloatExtra("latitud", 0));
             client.setLongitude(intent.getFloatExtra("longitud", 0));
 
-            if (intent.getByteArrayExtra("client_image") != null)
-                clientImage.setImageBitmap(ImageUtils.getBitmap(intent.getByteArrayExtra("client_image")));
+            // if (intent.getByteArrayExtra("client_image") != null)
+            // TODO anulo el guardado de imágenes reales ya que con la BBDD H2 no deja guardar datos tan grandes
+            // clientImage.setImageBitmap(ImageUtils.getBitmap(intent.getByteArrayExtra("client_image")));
             etName.setText(intent.getStringExtra("name"));
             etSurname.setText(intent.getStringExtra("surname"));
             etDni.setText(intent.getStringExtra("dni"));
@@ -112,14 +115,16 @@ public class AddClientView extends AppCompatActivity implements AddClientContrac
         }
     }
 
+    @Override
     public void addClient(View view) {
 
         client.setName(etName.getText().toString().trim());
         client.setSurname(etSurname.getText().toString().trim());
         client.setDni(etDni.getText().toString().trim());
-        client.setClientImage(ImageUtils.fromImageViewToByteArray(clientImage));
+        client.setClientImage(null);
 
-        presenter.addClient(client, modifyClient);
+        presenter.addOrModifyClient(client, modifyClient);
+
     }
 
     @Override
@@ -134,6 +139,11 @@ public class AddClientView extends AppCompatActivity implements AddClientContrac
         client.setLatitude(0);
         client.setLongitude(0);
         marker.remove();
+    }
+
+    @Override
+    public void showMessage(int stringRes) {
+        Toast.makeText(this, stringRes, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -185,10 +195,10 @@ public class AddClientView extends AppCompatActivity implements AddClientContrac
         map = googleMap;    // Asignamos el mapa pasado por parámetro a nuestra variable de tipo GoogleMap
         googleMap.setOnMapClickListener(this);  // Establecemos un listener de click sencillo para el mapa
 
-        if (client.getLatitude() != 0 && client.getLongitude() != 0) {  // Si el cliente tiene ubicación
+        if (client.getLatitude() != 0 || client.getLongitude() != 0) {  // Si el cliente tiene ubicación
             onMapClick(new LatLng(client.getLatitude(), client.getLongitude()));    // Pone un Marker
             map.moveCamera(CameraUpdateFactory.newLatLng    // Centra la camara y asigna un zoom
-                    (new LatLng((client.getLatitude()-0.06), client.getLongitude())));
+                    (new LatLng((client.getLatitude() - 0.03), client.getLongitude())));
             map.moveCamera(CameraUpdateFactory.zoomTo(11));
         }
     }

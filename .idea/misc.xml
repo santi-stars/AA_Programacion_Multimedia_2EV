@@ -46,9 +46,14 @@
         <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout/activity_add_bike.xml" value="0.23984608807182556" />
         <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout/activity_add_client.xml" value="0.22958529286019666" />
         <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout/activity_add_order.xml" value="0.23984608807182556" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout/activity_menu.xml" value="0.23984608807182556" />
         <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout/activity_view_order.xml" value="0.23984608807182556" />
         <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout/client_and_bike_adapter.xml" value="0.23984608807182556" />
         <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/layout/fragment_order_detail.xml" value="0.23984608807182556" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/menu/bike_actionbar.xml" value="0.23984608807182556" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/menu/client_actionbar.xml" value="0.25" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/menu/client_listview_menu.xml" value="0.1633176571184267" />
+        <entry key="..\:/Users/santi/AndroidStudioProjects/AA_Programacion_Multimedia_2EV/GestiTaller/app/src/main/res/menu/listview_menu.xml" value="0.22" />
       </map>
     </option>
   </component>

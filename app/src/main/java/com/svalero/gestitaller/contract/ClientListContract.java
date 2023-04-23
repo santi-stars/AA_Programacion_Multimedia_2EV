@@ -4,25 +4,39 @@ import android.content.Context;
 
 import com.svalero.gestitaller.domain.Client;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface ClientListContract {
     interface Model {
+        interface OnLoadClientsListener {
+            void onLoadClientsSuccess(List<Client> clients);
+
+            void onLoadClientsError(int message);
+        }
+
+        interface OnDeleteClientListener {
+            void onDeleteClientSuccess(int message);
+
+            void onDeleteClientError(int message);
+        }
+
         void startDb(Context context);
 
-        ArrayList<Client> loadAllClients();
+        void loadAllClients(OnLoadClientsListener listener);
 
-        ArrayList<Client> loadClientsByName(String query);
+        void loadClientsByName(OnLoadClientsListener listener, String query);
 
-        ArrayList<Client> loadClientsBySurname(String query);
+        void loadClientsBySurname(OnLoadClientsListener listener, String query);
 
-        ArrayList<Client> loadClientsByDni(String query);
+        void loadClientsByDni(OnLoadClientsListener listener, String query);
 
-        void deleteClient(Client client);
+        void deleteClient(OnDeleteClientListener listener, Client client);
     }
 
     interface View {
-        void listClients(ArrayList<Client> clients);
+        void listClients(List<Client> clients);
+
+        void showMessage(int message);
     }
 
     interface Presenter {

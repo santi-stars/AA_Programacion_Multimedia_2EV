@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class Client {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private int id;     // TODO en la API es LONG!!!
     @ColumnInfo
     private String name;
     @ColumnInfo
@@ -29,6 +29,7 @@ public class Client {
 
     @Ignore
     public Client() {
+        this.setId(0);
     }
 
     public Client(int id, String name, String surname, String dni, boolean vip, float latitude, float longitude, byte[] clientImage) {
